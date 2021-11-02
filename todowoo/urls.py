@@ -27,5 +27,6 @@ urlpatterns = [
 
     # Todos
     path('', views.homepage, name='homepage'),
-    path('current/', views.currenttodos, name='currenttodos')
+    path('current/', views.currenttodos, name='currenttodos'),
+    path('create/', views.createtask, name='createtask')
 ]

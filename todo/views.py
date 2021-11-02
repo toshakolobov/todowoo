@@ -3,14 +3,18 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
+from todo.forms import TaskForm
 
 # Create your views here.
+
 
 def homepage(request):
     return render(request, 'todo/homepage.html')
 
 def signupuser(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render(request, 'todo/signupuser.html', {'form': UserCreationForm()})
+    else:
         if request.POST['password1'] == request.POST['password2']:
             try:
                 user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
@@ -24,8 +28,7 @@ def signupuser(request):
         else:
             return render(request, 'todo/signupuser.html',
                           {'form': UserCreationForm(), 'errmsg': 'Passwords didn\'t match.'})
-    elif request.method == 'GET':
-        return render(request, 'todo/signupuser.html', {'form': UserCreationForm()})
+
 
 def currenttodos(request):
     return render(request, 'todo/currenttodos.html')
@@ -46,3 +49,16 @@ def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('homepage')
+
+def createtask(request):
+    if request.method == 'GET':
+        return render(request, 'todo/createtask.html', {'form': TaskForm})
+    else:
+        try:
+            form = TaskForm(request.POST)
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect('currenttodos')
+        except ValueError:
+            return render(request, 'todo/createtask.html', {'form': TaskForm, 'errmsg': 'Bad data. Try again.'})
