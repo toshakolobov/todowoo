@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
-from todo.forms import TaskForm
+from .forms import TaskForm
+from .models import Task
 
 # Create your views here.
 
@@ -31,7 +32,8 @@ def signupuser(request):
 
 
 def currenttodos(request):
-    return render(request, 'todo/currenttodos.html')
+    tasks = Task.objects.filter(user=request.user, completion_date__isnull=True)
+    return render(request, 'todo/currenttodos.html', {'tasks': tasks})
 
 def signinuser(request):
     if request.method == 'GET':
