@@ -1,0 +1,23 @@
+{% extends 'todo/base.html' %}
+{% block content %}
+    COMPLETEDTASKS
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <a href="{% url 'viewtask' task.id %}">
+                    {% if task.is_important %}
+                        <b>
+                    {% endif %}
+                    {{ task.name }}
+                    {% if task.is_important %}
+                        </b>
+                    {% endif %}
+                    {% if task.description %}
+                         - {{ task.description }}
+                    {% endif %}
+                    {{ task.completion_date|date:'M j Y H:i' }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

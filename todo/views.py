@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from .forms import TaskForm
 from .models import Task
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -32,9 +33,15 @@ def signupuser(request):
                           {'form': UserCreationForm(), 'errmsg': 'Passwords didn\'t match.'})
 
 
+@login_required
 def currenttasks(request):
     tasks = Task.objects.filter(user=request.user, completion_date__isnull=True)
     return render(request, 'todo/currenttasks.html', {'tasks': tasks})
+
+@login_required
+def completedtasks(request):
+    tasks = Task.objects.filter(user=request.user, completion_date__isnull=False).order_by('-completion_date')
+    return render(request, 'todo/completedtasks.html', {'tasks': tasks})
 
 def signinuser(request):
     if request.method == 'GET':
@@ -48,11 +55,13 @@ def signinuser(request):
             login(request, user)
             return redirect('currenttasks')
 
+@login_required
 def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('homepage')
 
+@login_required
 def createtask(request):
     if request.method == 'GET':
         return render(request, 'todo/createtask.html', {'form': TaskForm})
@@ -66,6 +75,7 @@ def createtask(request):
         except ValueError:
             return render(request, 'todo/createtask.html', {'form': TaskForm, 'errmsg': 'Bad data. Try again.'})
 
+@login_required
 def viewtask(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk, user=request.user)
     if request.method == 'GET':
@@ -80,6 +90,7 @@ def viewtask(request, task_pk):
         except ValueError:
             return render(request, 'todo/viewtask.html', {'task': task, 'form': form, 'errmsg': 'Bad data. Try again.'})
 
+@login_required
 def completetask(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk, user=request.user)
     if request.method == 'POST':
@@ -87,6 +98,7 @@ def completetask(request, task_pk):
         task.save()
         return redirect('currenttasks')
 
+@login_required
 def deletetask(request, task_pk):
     task = get_object_or_404(Task, pk=task_pk, user=request.user)
     if request.method == 'POST':
