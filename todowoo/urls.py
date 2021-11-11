@@ -27,6 +27,9 @@ urlpatterns = [
 
     # Todos
     path('', views.homepage, name='homepage'),
-    path('current/', views.currenttodos, name='currenttodos'),
-    path('create/', views.createtask, name='createtask')
+    path('current/', views.currenttasks, name='currenttasks'),
+    path('create/', views.createtask, name='createtask'),
+    path('task/<int:task_pk>', views.viewtask, name='viewtask'),
+    path('task/<int:task_pk>/complete', views.completetask, name='completetask'),
+    path('task/<int:task_pk>/delete', views.deletetask, name='deletetask'),
 ]
