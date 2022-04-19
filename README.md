@@ -1,2 +1,2 @@
 # todowoo
-Training project from educational Django course
+Third training project from educational Django course
